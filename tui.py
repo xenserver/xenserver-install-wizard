@@ -17,4 +17,11 @@ def choose(question, options):
 	x = subprocess.Popen(cmd, stderr = subprocess.PIPE)
 	y = x.communicate()
 	return str(y[1])
+
+def text(question, default):
+	cmd = [ WHIPTAIL, "--inputbox", question, "8", "50", default ]
+	x = subprocess.Popen(cmd, stderr = subprocess.PIPE)
+	y = x.communicate()
+	return str(y[1])
+
 	

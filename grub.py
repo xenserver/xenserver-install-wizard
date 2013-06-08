@@ -58,10 +58,7 @@ def make_xen_based_on((name, args,)):
 			args2.append("\t" + a)
 	return (("xen", args2,))
 
-def analyse():
-	filename = GRUB_CONF
-	if len(sys.argv) == 2:
-		filename = sys.argv[1]
+def analyse(filename):
 
 	f = open(filename, "r")
 	lines = f.readlines()
@@ -77,37 +74,42 @@ def analyse():
 	if default_index in xen_index:
 		print >>sys.stderr, "OK: default kernel is xen"
 		return
-	fd, output_filename = tempfile.mkstemp(prefix="grub")
-	f = os.fdopen(fd, "w")
 	if xen_index == []:
-		if not(tui.yesno("Would you like me to add xen to grub.conf, based on your current default kernel and make it the default?")):
+		if not(tui.yesno("Would you like me to add xen, based on your current default kernel, to grub.conf and make it the default?")):
 			print >>sys.stderr, "WARNING: system is not going to boot xen by default"
 			return
+		new_lines = []
 		for line in lines:
 			tmp = line.strip()
 			if tmp.startswith("default="):
-				print >>f, "default=%d" % (len(all))
+				new_lines.append("default=%d" % (len(all)))
 			else:
-				print >>f, line,
+				new_lines.append(line[0:-1])
 		(name, args,) = make_xen_based_on(all[default_index])
-		print >>f, "# added by the xenserver install wizard"
-		print >>f, name
+		new_lines.append("# added by the xenserver install wizard")
+		new_lines.append(name)
 		for line in args:
-			print >>f, line
+			new_lines.append(line)
+		return (filename, new_lines)
 	else:
 		if not(tui.yesno("Would you like me to make xen the default in grub.conf?")):
 			print >>sys.stderr, "WARNING: system is not going to boot xen by default"
 			return
+		new_lines = []
 		for line in lines:
 			tmp = line.strip()
 			if tmp.startswith("default="):
-				print >>f, "default=%d" % xen_index[0]
+				new_lines.append("default=%d" % xen_index[0])
 			else:
-				print >>f, line,
-	f.close()
-	return output_filename
+				new_lines.append(line[0:-1])
+		return (filename, new_lines)
 
 if __name__ == "__main__":
-	new_grub_conf = analyse()
-	if new_grub_conf:
-		print "I propose to replace grub.conf with %s" % new_grub_conf
+	filename = GRUB_CONF
+	if len(sys.argv) == 2:
+		filename = sys.argv[1]
+	result = analyse(filename)
+	if result:
+		print "I propose to replace %s with:" % result[0]
+		for line in result[1]:
+			print line

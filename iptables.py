@@ -22,7 +22,7 @@ def all_accepted_ports_of(lines):
 			result.append(port)
 	return result
 
-def analyse(filename):
+def analyse(filename = IPTABLES):
 	f = open(filename, "r")
 	lines = f.readlines()
 	f.close()
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 	filename = IPTABLES
 	if len(sys.argv) == 2:
 		filename = sys.argv[1]
-	result = analyse(filename)
+	result = analyse(filename = filename)
 	if result:
 		print "I propose the file %s is changed to read:" % result[0]
 		for line in result[1]:

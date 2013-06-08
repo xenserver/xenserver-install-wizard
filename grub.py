@@ -58,7 +58,7 @@ def make_xen_based_on((name, args,)):
 			args2.append("\t" + a)
 	return (("xen", args2,))
 
-def analyse(filename):
+def analyse(filename = GRUB_CONF):
 
 	f = open(filename, "r")
 	lines = f.readlines()
@@ -108,7 +108,7 @@ if __name__ == "__main__":
 	filename = GRUB_CONF
 	if len(sys.argv) == 2:
 		filename = sys.argv[1]
-	result = analyse(filename)
+	result = analyse(filename = filename)
 	if result:
 		print "I propose to replace %s with:" % result[0]
 		for line in result[1]:

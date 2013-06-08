@@ -28,7 +28,7 @@ def analyse():
 			sr = x.xenapi.SR.create(hosts[0], { "path": path }, "0", path, "Files stored in %s" % path, "ffs", "default", False)
 			x.xenapi.pool.set_default_SR(pool, sr)
 			x.xenapi.pool.set_suspend_image_SR(pool, sr)
-			x.xenapi.pool.set_crashdump_SR(pool, sr)
+			x.xenapi.pool.set_crash_dump_SR(pool, sr)
 			print >>sys.stderr, "OK: created default SR"
 
 	finally:

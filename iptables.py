@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import sys, subprocess
 
 import tui
 
@@ -51,6 +51,13 @@ def analyse(filename = IPTABLES):
 			done = True
 		new_lines.append(tmp)
 	return (filename, new_lines)
+
+def restart():
+	cmd = [ "/sbin/service", "iptables", "restart" ]
+	x = subprocess.call(cmd)
+	if x <> 0:
+		print >>sys.stderr, "FAILED: failed to restart iptabes (%s)" % (" ".join(cmd))
+		exit(1)
 
 if __name__ == "__main__":
 	filename = IPTABLES

@@ -5,7 +5,7 @@ import os, os.path, sys, subprocess
 def choose_filename(name, prefix):
 	# choose a name for the backup file that doesn't exist yet
 	i = 0
-	stem = prefix + "." + name
+	stem = os.path.dirname(name) + "/" + prefix + "." + os.path.basename(name)
 	filename = stem
 	while os.path.exists(filename):
 		filename = stem + "." + str(i)

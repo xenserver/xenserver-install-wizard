@@ -56,7 +56,7 @@ def make_xen_based_on((name, args,)):
 			args2.append("\tmodule " + a[len("initrd "):])
 		else:
 			args2.append("\t" + a)
-	return (("xen", args2,))
+	return (("title xen", args2,))
 
 def analyse(filename = GRUB_CONF):
 

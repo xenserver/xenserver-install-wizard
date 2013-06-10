@@ -18,6 +18,7 @@ if __name__ == "__main__":
 		replace.file(r[0], r[1])
 	r = networking.analyse()
 	if r:
+		need_to_reboot = True
 		for change in r:
 			replace.file(change[0], change[1])
 	r = iptables.analyse()

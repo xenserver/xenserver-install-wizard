@@ -3,7 +3,10 @@ import subprocess
 WHIPTAIL = "/usr/bin/whiptail"
 
 def yesno(question):
-	cmd = [ WHIPTAIL, "--yesno", question, "10", str(len(question)) ]
+	width = len(question)
+	if width > 80:
+		width = 80
+	cmd = [ WHIPTAIL, "--yesno", question, "10", str(width) ]
 	code = subprocess.call(cmd)
 	if code == 0:
 		return True

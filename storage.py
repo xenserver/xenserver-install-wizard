@@ -33,7 +33,6 @@ def analyse():
 
 	finally:
 		x.logout()
-		xapi.stop()
 
 if __name__ == "__main__":
 	analyse()

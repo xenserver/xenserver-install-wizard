@@ -88,7 +88,6 @@ def analyse():
 		return file_changes
 	finally:
 		x.logout()
-		xapi.stop()
 
 if __name__ == "__main__":
 	file_changes = analyse()

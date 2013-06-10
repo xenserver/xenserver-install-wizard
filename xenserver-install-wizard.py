@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, subprocess
-import replace, tui, grub, networking, iptables, storage
+import xapi, replace, tui, grub, networking, iptables, storage
 
 def reboot():
 	print >>sys.stderr, "Triggering an immediate reboot"
@@ -11,6 +11,7 @@ def reboot():
 		print >>sys.stderr, "FAILED: to trigger a reboot (%s)" % (" ".join(cmd))
 
 if __name__ == "__main__":
+	xapi.start ()
 	need_to_reboot = False
 	r = grub.analyse()
 	if r:

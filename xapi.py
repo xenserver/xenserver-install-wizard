@@ -39,12 +39,6 @@ def start():
 		if service not in already_started:
 			start_service(service)
 
-def stop():
-	for service in services:
-		if service not in already_started:
-			stop_service(service)
-
 def open():
-	start ()
 	return XenAPI.xapi_local()
 

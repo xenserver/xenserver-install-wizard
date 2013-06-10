@@ -10,7 +10,15 @@ def reboot():
 	if x <> 0:
 		print >>sys.stderr, "FAILED: to trigger a reboot (%s)" % (" ".join(cmd))
 
+def stop_xend():
+	print >>sys.stderr, "Permanently stopping xend"
+	if subprocess.call(["/sbin/chkconfig", "--level", "345", "xend", "off"]) <> 0:
+		print >>sys.stderr, "FAILED: to disable xend"
+	if subprocess.call(["/sbin/service", "xend", "stop"]) <> 0:
+		print >>sys.stderr, "FAILED: to stop xend"
+
 if __name__ == "__main__":
+	stop_xend ()
 	xapi.start ()
 	need_to_reboot = False
 	r = grub.analyse()

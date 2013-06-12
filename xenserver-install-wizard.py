@@ -30,6 +30,7 @@ if __name__ == "__main__":
 		need_to_reboot = True
 		for change in r:
 			replace.file(change[0], change[1])
+		networking.restart()
 	r = iptables.analyse()
 	if r:
 		replace.file(r[0], r[1])

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import sys, subprocess
 import xapi, tui
 
 def sysconfig_file(device):

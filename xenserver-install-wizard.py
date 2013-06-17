@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, subprocess
-import xapi, replace, tui, grub, networking, iptables, storage
+import xapi, replace, tui, grub, networking, iptables, storage, templates
 
 def reboot():
 	print >>sys.stderr, "Triggering an immediate reboot"
@@ -36,6 +36,7 @@ if __name__ == "__main__":
 		replace.file(r[0], r[1])
 		iptables.restart()
 	storage.analyse()
+	templates.create()
 	print "Welcome to XenServer!"
 	if need_to_reboot:
 		if tui.yesno("A reboot is needed to fully activate XenServer. Would you like to reboot now?"):

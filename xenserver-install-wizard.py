@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, subprocess
-import xapi, replace, tui, grub, networking, iptables, storage, templates
+import xapi, replace, tui, grub, networking, iptables, storage, templates, logging
 
 def reboot():
 	print >>sys.stderr, "Triggering an immediate reboot"
@@ -18,6 +18,10 @@ def stop_xend():
 		print >>sys.stderr, "FAILED: to stop xend"
 
 if __name__ == "__main__":
+	r = logging.analyse()
+	if r:
+		replace.file(r[0], r[1])
+		logging.restart()
 	stop_xend ()
 	xapi.start ()
 	need_to_reboot = False

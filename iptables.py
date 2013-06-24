@@ -22,14 +22,22 @@ def all_accepted_ports_of(lines):
 			result.append(port)
 	return result
 
+def is_forwarding_blocked(lines):
+	for line in lines:
+		if line.startswith("-A FORWARD -j REJECT"):
+			return True
+	return False
+
 def analyse(filename = IPTABLES):
 	f = open(filename, "r")
 	lines = f.readlines()
 	f.close()
 
 	ports = all_accepted_ports_of(lines)
+	forwarding_blocked = is_forwarding_blocked(lines)
 	needed_ports = [80, 443]
 	ports_to_add = []
+	
 	for p in needed_ports:
 		if p in ports:
 			print >>sys.stderr, "OK: there appears to be a firewall hole for port %d" % p
@@ -38,8 +46,13 @@ def analyse(filename = IPTABLES):
 				ports_to_add.append(p)
 			else:
 				print >>sys.stderr, "WARNING: the firewall might be blocking port %d" % p
+	if forwarding_blocked:
+		if tui.yesno("Would you like your firewall to allow packet forwarding?"):
+			pass
+		else:
+			forwarding_blocked = False
 
-	if ports_to_add == []:
+	if ports_to_add == [] and not forwarding_blocked:
 		return None
 	new_lines = []
 	done = False
@@ -49,6 +62,8 @@ def analyse(filename = IPTABLES):
 			for p in ports_to_add:
 				new_lines.append("-A INPUT -p tcp -m tcp --dport %d -j ACCEPT" % p)
 			done = True
+		if tmp.startswith("-A FORWARD -j REJECT") and forwarding_blocked:
+			continue
 		new_lines.append(tmp)
 	return (filename, new_lines)
 

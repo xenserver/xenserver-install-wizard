@@ -44,6 +44,6 @@ if __name__ == "__main__":
 	templates.create()
 	print "Welcome to XenServer!"
 	if need_to_reboot:
-		if tui.yesno("A reboot is needed to fully activate XenServer. Would you like to reboot now?"):
+		if tui.yesno("A reboot is needed before XenServer is fully ready. Would you like to reboot now?"):
 			reboot()
 	

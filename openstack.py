@@ -22,7 +22,7 @@ def analyse():
 	try:
 		srs = x.xenapi.SR.get_all_records()
 		for sr in srs.keys():
-			if srs[sr]["type"] == "ext3":
+			if srs[sr]["type"] == "ext":
 				return
 		if not(tui.yesno("Would you like to configure some local storage for openstack?")):
 			return
@@ -33,10 +33,10 @@ def analyse():
 			return
 		path = "/var/run/sr-mount/%s" % uuid
 		mkdir(path)
-		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "ext3", "default", False, {})
+		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "ext", "default", False, {})
 		pbd = x.xenapi.PBD.create({ "host": hosts[0], "SR": sr, "device_config": {"path": path}})
 		x.xenapi.PBD.plug(pbd)
-		print >>sys.stderr, "OK: created local ext3 SR for openstack"
+		print >>sys.stderr, "OK: created local ext SR for openstack"
 
 	finally:
 		x.logout()

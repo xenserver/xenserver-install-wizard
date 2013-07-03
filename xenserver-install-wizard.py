@@ -40,6 +40,7 @@ if __name__ == "__main__":
 		replace.file(r[0], r[1])
 		iptables.restart()
 	storage.analyse()
+	openstack.analyse()
 	hostname.analyse()
 	templates.create()
 	print "Welcome to XenServer!"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, subprocess
-import xapi, replace, tui, grub, networking, iptables, storage, templates, logging, hostname
+import xapi, replace, tui, grub, networking, iptables, storage, templates, logging, hostname, openstack
 
 def reboot():
 	print >>sys.stderr, "Triggering an immediate reboot"

@@ -36,6 +36,10 @@ def analyse():
 		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "ext", "default", False, {})
 		pbd = x.xenapi.PBD.create({ "host": hosts[0], "SR": sr, "device_config": {"path": path}})
 		x.xenapi.PBD.plug(pbd)
+		pool = x.xenapi.pool.get_all()[0]
+		pool_r = x.xenapi.pool.get_record(pool)
+		default_sr = pool_r["default_SR"]
+		x.xenapi.pool.set_default_SR(pool, sr)
 		print >>sys.stderr, "OK: created local ext SR for openstack"
 
 	finally:

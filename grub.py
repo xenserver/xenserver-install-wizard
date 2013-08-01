@@ -46,7 +46,7 @@ def make_xen_based_on((name, args,)):
 		print >>sys.stderr, "/boot/xen.gz doesn't exist: is xen installed?"
 		exit(1)
 	args2 = [ ]
-	kernel = "kernel /xen.gz dom0_mem=752M:max:2048M loglvl=all guest_loglvl=all"
+	kernel = "kernel /xen.gz dom0_mem=2048M,max:2048M loglvl=all guest_loglvl=all"
 	for a in args:
 		a = a.strip()
 		if a.startswith("kernel "):

@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-import sys, subprocess
+import sys, subprocess, os, os.path
 import xapi, tui
 
 def sysconfig_file(device):
 	return "/etc/sysconfig/network-scripts/ifcfg-%s" % device
 
 def load_sysconfig(device):
+	if not(os.path.exists(sysconfig_file(device))):
+		return None
 	f = open(sysconfig_file(device), "r")
 	try:
 		results = {}
@@ -59,6 +61,9 @@ def analyse():
 		file_changes = []
 		for d in devices:
 			sysconfig = load_sysconfig(d)
+			if not sysconfig:
+				print >>sys.stderr, "There is no ifcfg- file for NIC %s: skipping" % d
+				continue
 			new_sysconfig = {}
 			for key in sysconfig:
 				if key == "NM_CONTROLLED" and sysconfig["NM_CONTROLLED"] == "yes":

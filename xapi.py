@@ -5,10 +5,14 @@ import XenAPI
 from subprocess import call
 
 def is_service_running(name):
-	x = call(["/sbin/service", name, "status"])
-	if x == 0:
-		return True
-	return False
+	try:
+		x = call(["/sbin/service", name, "status"])
+		if x == 0:
+			return True
+		return False
+	except:
+		print >>sys.stderr, "Failed to detect whether %s is running; assuming it is not" % name
+		return False
 
 def start_service(service):
 	x = call(["/sbin/service", service, "start"])

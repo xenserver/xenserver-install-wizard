@@ -1,24 +1,32 @@
 #!/usr/bin/env python
 
-import sys, subprocess, os, os.path
-import xapi, tui
+import sys, subprocess, os, os.path, platform
+import xapi, tui, interfaces, networkscripts
 
-def choose_mgmt():
+# Common, distribution-agnostic network interface configuration code.
+# This is mostly code to interact with xapi and the user.
+
+def list_devices():
+	"""Use xapi to query the PIFs on the local host"""
 	x = xapi.open()	
 	x.login_with_password("root", "")
+	no_configuration = {
+		"devices": [], # none will be managed by xapi
+		"device_to_pif": {}
+	}
 	try:
 		hosts = x.xenapi.host.get_all()
 		if len(hosts) <> 1:
 			print >>sys.stderr, "WARNING: cannot configuring networking if already pooled"
-			return
+			return no_configuration
 		pifs = x.xenapi.PIF.get_all_records()
 		for pif in pifs:
 			if pifs[pif]["management"]:
 				print >>sys.stderr, "OK: found a configured management interface"
-				return
+				return no_configuration
 		if not(tui.yesno("Would you like me to set up host networking for XenServer?")):
 			print >>sys.stderr, "WARNING: host networking is not set up"
-			return
+			return no_configuration
 		print "PIF scan %s" % hosts[0]
 		x.xenapi.PIF.scan(hosts[0])
 		print "PIF.get_all_records"
@@ -30,11 +38,63 @@ def choose_mgmt():
 			devices.append(pif_r["device"])
 			device_to_pif[pif_r["device"]] = pif
 		devices.sort()
-		options = []
-		for d in devices:
-			options.append((d, "<insert description>",))
-		mgmt = tui.choose("Please select a management interface", options)
-		return (mgmt, devices)
+		return {
+			"devices": devices,
+			"device_to_pif": device_to_pif
+		}
 	finally:
 		x.logout()
 
+def choose_management(config):
+	"""Ask the user which PIF should be used for management traffic"""
+	options = []
+	for d in devices:
+		options.append((d, "<insert description>",))
+	if options == []:
+		return config
+	mgmt = tui.choose("Please select a management interface", options)
+	config = config["management"] = mgmt
+	return config
+
+def configure(config, new_interfaces):
+	"""Configure [new_interfaces] through the XenAPI"""
+        x = xapi.open() 
+        x.login_with_password("root", "")
+        try:
+		for device in new_interfaces:
+			mode, address, netmask, gateway, dns = new_interfaces[device]
+			if mode == "DHCP":
+				print >> sys.stderr, "Configuring %s with DHCP" % device
+			else:
+				print >> sys.stderr, "Configuring %s with static IP %s netmask %s gateway %s DNS %s" % (device, mode, address, netmask, gateway, dns)
+			x.xenapi.PIF.reconfigure_ip(config["device_to_pif"][device], mode, address, netmask, gateway, dns)
+		print >> sys.stderr, "Configuring %s as the management interface" % config["management"]
+		x.xenapi.PIF.reconfigure_ip(config["device_to_pif"][config["management"]])
+        finally:
+                x.logout()
+
+debian_like = [ "Ubuntu", "debian" ]
+rhel_like = [ "redhat" ]
+
+def analyse():
+	config = list_devices()
+	config = choose_mgmt ()
+	result = None
+	distribution = platform.linux_distribution()[0]
+	if distribution in debian_like:
+		result = interfaces.analyse(config)
+	elif distribution in rhel_like:
+		result = networkscripts.analyse(config)
+	if not result:
+		result None
+	file_changes, new_interfaces = result
+	configure(config, new_interfaces)
+	return file_changes
+
+# Maybe time to start ... using OO?
+def restart():
+	distribution = platform.linux_distribution()[0]
+	if distribution in debian_like:
+		interfaces.restart()
+	elif distribution in rhel_like:
+		networkscripts.restart()

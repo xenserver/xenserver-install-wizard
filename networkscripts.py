@@ -27,12 +27,15 @@ def save_sysconfig(x):
 		lines.append("%s=\"%s\"" % (k, x[k]))
 	return lines
 
-def analyse():
-	mgmt, devices = network.choose_mgmt()
+def analyse(config):
+	mgmt = config["management"]
+	devices = config["devices"]
+
 	x = xapi.open()	
 	x.login_with_password("root", "")
 	try:
 		file_changes = []
+		interfaces_to_reconfigure = {}
 		for d in devices:
 			sysconfig = load_sysconfig(d)
 			if not sysconfig:
@@ -52,19 +55,14 @@ def analyse():
 				file_changes.append((sysconfig_file(d), save_sysconfig(new_sysconfig),))
 
 			if "BOOTPROTO" in sysconfig and sysconfig["BOOTPROTO"] == "dhcp":
-				print >>sys.stderr, "Setting PIF to DHCP"
-				x.xenapi.PIF.reconfigure_ip(device_to_pif[d], "DHCP", "", "", "", "")
+				interfaces_to_reconfigure[d] = ("DHCP", "", "", "", "")
 			if "BOOTPROTO" in sysconfig and sysconfig["BOOTPROTO"] == "none":
 				if "IPADDR" in sysconfig and "NETWORK" in sysconfig and "NETMASK" in sysconfig:
 					ipaddr = sysconfig["IPADDR"]
 					network = sysconfig["NETWORK"]
 					netmask = sysconfig["NETMASK"]
-					print >>sys.stderr, "Setting PIF to static"
-					x.xenapi.PIF.reconfigure_ip(device_to_pif[d], "Static", ipaddr, netmask, network, "")
-			if d == mgmt:
-				print >>sys.stderr, "Setting PIF as management"
-				x.xenapi.host.management_reconfigure(device_to_pif[d])
-		return file_changes
+					interfaces_to_reconfigure[d] = ("Static", ipaddr, netmask, network, "")
+		return (file_changes, interfaces_to_reconfigure)
 	finally:
 		x.logout()
 
@@ -73,7 +71,11 @@ def restart():
 		 print >>sys.stderr, "FAILED: to restart networking"
 
 if __name__ == "__main__":
-	file_changes = analyse()
+	config = {
+		"devices": [ "em1", "em2" ],
+		"management": "em1",
+	}
+	file_changes = analyse(config)
 	if file_changes:
 		for change in file_changes:
 			print "I propose changing %s to:" % change[0]

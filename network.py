@@ -74,14 +74,14 @@ def configure(config, new_interfaces):
         finally:
                 x.logout()
 
-debian_like = [ "Ubuntu", "debian" ]
-rhel_like = [ "redhat" ]
+debian_like = [ "ubuntu", "debian" ]
+rhel_like = [ "fedora", "redhat", "centos" ]
 
 def analyse():
 	config = list_devices()
 	config = choose_management(config)
 	result = None
-	distribution = platform.linux_distribution()[0]
+	distribution = platform.linux_distribution()[0].lower()
 	if distribution in debian_like:
 		result = interfaces.analyse(config)
 	elif distribution in rhel_like:
@@ -94,7 +94,7 @@ def analyse():
 
 # Maybe time to start ... using OO?
 def restart():
-	distribution = platform.linux_distribution()[0]
+	distribution = platform.linux_distribution()[0].lower()
 	if distribution in debian_like:
 		interfaces.restart()
 	elif distribution in rhel_like:

@@ -53,7 +53,7 @@ def choose_management(config):
 	if options == []:
 		return config
 	mgmt = tui.choose("Please select a management interface", options)
-	config = config["management"] = mgmt
+	config["management"] = mgmt
 	return config
 
 def configure(config, new_interfaces):
@@ -70,7 +70,7 @@ def configure(config, new_interfaces):
 			x.xenapi.PIF.reconfigure_ip(config["device_to_pif"][device], mode, address, netmask, gateway, dns)
 		if "management" in config:
 			print >> sys.stderr, "Configuring %s as the management interface" % config["management"]
-			x.xenapi.PIF.reconfigure_ip(config["device_to_pif"][config["management"]])
+			x.xenapi.host.management_reconfigure(config["device_to_pif"][config["management"]])
         finally:
                 x.logout()
 

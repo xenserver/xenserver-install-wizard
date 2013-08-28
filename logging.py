@@ -57,7 +57,7 @@ def analyse(filename=RSYSLOGD_CONF):
 	return (filename, lines2)
 
 def restart():
-	if subprocess.call(["/sbin/service", "rsyslog", "restart"]) <> 0:
+	if subprocess.call(["service", "rsyslog", "restart"]) <> 0:
 		print >>sys.stderr, "FAILED: to restart rsyslog"
 
 if __name__ == "__main__":

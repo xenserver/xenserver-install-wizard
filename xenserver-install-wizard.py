@@ -2,6 +2,7 @@
 
 import sys, subprocess
 import xapi, replace, tui, grub, network, iptables, storage, templates, logging, hostname, openstack
+import platform
 
 def reboot():
 	print >>sys.stderr, "Triggering an immediate reboot"
@@ -12,9 +13,16 @@ def reboot():
 
 def stop_xend():
 	print >>sys.stderr, "Permanently stopping xend"
-	if subprocess.call(["/sbin/chkconfig", "--level", "345", "xend", "off"]) <> 0:
-		print >>sys.stderr, "FAILED: to disable xend"
-	if subprocess.call(["/sbin/service", "xend", "stop"]) <> 0:
+	distro = platform.dist()[0].lower()
+	if distro in ["fedora", "redhat", "centos"]:
+		if subprocess.call(["chkconfig", "--level", "345", "xend", "off"]) <> 0:
+			print >>sys.stderr, "FAILED: to disable xend"
+	elif distro in ["ubuntu", "debian"]:
+		if subprocess.call(["update-rc.d", "-f", "xend", "disable"]) <> 0:
+			print >>sys.stderr, "FAILED: to disable xend"
+	else: 
+		print >>sys.stderr, "FAILED: don't know how to disable xend"
+	if subprocess.call(["service", "xend", "stop"]) <> 0:
 		print >>sys.stderr, "FAILED: to stop xend"
 
 if __name__ == "__main__":

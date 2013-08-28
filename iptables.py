@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, subprocess
+import sys, subprocess, os, os.path
 
 import tui
 
@@ -29,6 +29,9 @@ def is_forwarding_blocked(lines):
 	return False
 
 def analyse(filename = IPTABLES):
+	if not(os.path.exists(filename)):
+		print >>sys.stderr, "I couldn't read %s, assuming your firewall is already configured" % filename
+		return None
 	f = open(filename, "r")
 	lines = f.readlines()
 	f.close()

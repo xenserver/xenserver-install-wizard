@@ -1,0 +1,12 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto em1
+iface em1 inet dhcp
+# This is an autoconfigured IPv6 interface
+iface em1 inet6 auto

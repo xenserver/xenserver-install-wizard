@@ -1,23 +1,34 @@
 #!/usr/bin/env python
 
-import time, sys
+import time, sys, os, os.path
 import XenAPI
 from subprocess import call
 
+def find_service():
+	for path in [ "/sbin/service", "/usr/sbin/service" ]:
+		if os.path.exists(path):
+			return path
+	print >>sys.stderr, "I don't know how to start and stop services on this platform"
+	exit(1)
+
 def is_service_running(name):
-	x = call(["/sbin/service", name, "status"])
-	if x == 0:
-		return True
-	return False
+	try:
+		x = call([find_service(), name, "status"])
+		if x == 0:
+			return True
+		return False
+	except:
+		print >>sys.stderr, "Failed to detect whether %s is running; assuming it is not" % name
+		return False
 
 def start_service(service):
-	x = call(["/sbin/service", service, "start"])
+	x = call([find_service(), service, "start"])
 	if x <> 0:
 		print >>sys.stderr, "ERROR: failed to start %s" % service
 	time.sleep(1)
 
 def stop_service(service):
-	x = call(["/sbin/service", service, "stop"])
+	x = call([find_service(), service, "stop"])
 	if x <> 0:
 		print >>sys.stderr, "ERROR: failed to stop %s" % service
 

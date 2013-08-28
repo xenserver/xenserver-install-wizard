@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, subprocess
-import xapi, replace, tui, grub, networking, iptables, storage, templates, logging, hostname, openstack
+import xapi, replace, tui, grub, network, iptables, storage, templates, logging, hostname, openstack
 
 def reboot():
 	print >>sys.stderr, "Triggering an immediate reboot"
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 	if r:
 		need_to_reboot = True
 		replace.file(r[0], r[1])
-	r = networking.analyse()
+	r = network.analyse()
 	if r:
 		need_to_reboot = True
 		for change in r:

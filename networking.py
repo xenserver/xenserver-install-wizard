@@ -95,7 +95,7 @@ def analyse():
 		x.logout()
 
 def restart():
-	if subprocess.call(["/sbin/service", "network", "restart"]) <> 0:
+	if subprocess.call(["service", "network", "restart"]) <> 0:
 		 print >>sys.stderr, "FAILED: to restart networking"
 
 if __name__ == "__main__":

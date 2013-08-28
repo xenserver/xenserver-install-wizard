@@ -12,9 +12,9 @@ def reboot():
 
 def stop_xend():
 	print >>sys.stderr, "Permanently stopping xend"
-	if subprocess.call(["/sbin/chkconfig", "--level", "345", "xend", "off"]) <> 0:
+	if subprocess.call(["chkconfig", "--level", "345", "xend", "off"]) <> 0:
 		print >>sys.stderr, "FAILED: to disable xend"
-	if subprocess.call(["/sbin/service", "xend", "stop"]) <> 0:
+	if subprocess.call(["service", "xend", "stop"]) <> 0:
 		print >>sys.stderr, "FAILED: to stop xend"
 
 if __name__ == "__main__":

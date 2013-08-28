@@ -5,19 +5,19 @@ import XenAPI
 from subprocess import call
 
 def is_service_running(name):
-	x = call(["/sbin/service", name, "status"])
+	x = call(["service", name, "status"])
 	if x == 0:
 		return True
 	return False
 
 def start_service(service):
-	x = call(["/sbin/service", service, "start"])
+	x = call(["service", service, "start"])
 	if x <> 0:
 		print >>sys.stderr, "ERROR: failed to start %s" % service
 	time.sleep(1)
 
 def stop_service(service):
-	x = call(["/sbin/service", service, "stop"])
+	x = call(["service", service, "stop"])
 	if x <> 0:
 		print >>sys.stderr, "ERROR: failed to stop %s" % service
 

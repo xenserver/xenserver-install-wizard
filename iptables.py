@@ -68,7 +68,7 @@ def analyse(filename = IPTABLES):
 	return (filename, new_lines)
 
 def restart():
-	cmd = [ "/sbin/service", "iptables", "restart" ]
+	cmd = [ "service", "iptables", "restart" ]
 	x = subprocess.call(cmd)
 	if x <> 0:
 		print >>sys.stderr, "FAILED: failed to restart iptabes (%s)" % (" ".join(cmd))

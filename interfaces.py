@@ -22,6 +22,7 @@ def analyse(config, filename = interfaces):
 	interfaces_to_reconfigure = {}
 
 	new_interfaces = []
+	need_to_replace_interfaces = False
 	# temporary state
 	device_name = None
 	device_address = None
@@ -36,6 +37,7 @@ def analyse(config, filename = interfaces):
 				new_interfaces.append("# " + line)
 				new_interfaces.append("# ^^^^^^^^ xenserver-install-wizard copied this interface configuration to xapi")
 				new_interfaces.append("")
+				need_to_replace_interfaces = True
 			else:
 				new_interfaces.append(line)
 		elif line.startswith("iface "):
@@ -66,7 +68,7 @@ def analyse(config, filename = interfaces):
 		else:
 			new_interfaces.append(line)
 		
-	if new_interfaces <> old_interfaces:
+	if need_to_replace_interfaces:
 		file_changes.append((filename, new_interfaces),)
 		return (file_changes, interfaces_to_reconfigure)
 

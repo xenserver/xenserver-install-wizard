@@ -48,7 +48,7 @@ def list_devices():
 def choose_management(config):
 	"""Ask the user which PIF should be used for management traffic"""
 	options = []
-	for d in devices:
+	for d in config["devices"]:
 		options.append((d, "<insert description>",))
 	if options == []:
 		return config
@@ -68,8 +68,9 @@ def configure(config, new_interfaces):
 			else:
 				print >> sys.stderr, "Configuring %s with static IP %s netmask %s gateway %s DNS %s" % (device, mode, address, netmask, gateway, dns)
 			x.xenapi.PIF.reconfigure_ip(config["device_to_pif"][device], mode, address, netmask, gateway, dns)
-		print >> sys.stderr, "Configuring %s as the management interface" % config["management"]
-		x.xenapi.PIF.reconfigure_ip(config["device_to_pif"][config["management"]])
+		if "management" in config:
+			print >> sys.stderr, "Configuring %s as the management interface" % config["management"]
+			x.xenapi.PIF.reconfigure_ip(config["device_to_pif"][config["management"]])
         finally:
                 x.logout()
 
@@ -78,7 +79,7 @@ rhel_like = [ "redhat" ]
 
 def analyse():
 	config = list_devices()
-	config = choose_mgmt ()
+	config = choose_management(config)
 	result = None
 	distribution = platform.linux_distribution()[0]
 	if distribution in debian_like:
@@ -86,7 +87,7 @@ def analyse():
 	elif distribution in rhel_like:
 		result = networkscripts.analyse(config)
 	if not result:
-		result None
+		return None
 	file_changes, new_interfaces = result
 	configure(config, new_interfaces)
 	return file_changes

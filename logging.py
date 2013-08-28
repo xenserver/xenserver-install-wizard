@@ -33,7 +33,7 @@ def analyse(filename=RSYSLOGD_CONF):
 		print >>sys.stderr, "logging: I recommend setting up rate-limiting"
 		if tui.yesno("Would you like me to adjust log rate-limiting to improve debugability?"):
 			rate_limiting_needed = True
-	if "*.debug" not in var_log_messages:
+	if var_log_messages and ("*.debug" not in var_log_messages):
 		print >>sys.stderr, "logging: I recommend enabling debug logging"
 		if tui.yesno("Would you like to enable logging for debug level messages?"):
 			debug_needed = True

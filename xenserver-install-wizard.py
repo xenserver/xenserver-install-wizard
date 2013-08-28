@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import sys, subprocess
-import xapi, replace, tui, grub, network, iptables, storage, templates, logging, hostname, openstack, toolstack
+import xapi, replace, tui, grub, grub2, network, iptables, storage, templates, logging, hostname, openstack, toolstack
 import platform
+import os
 
 def reboot():
 	print >>sys.stderr, "Triggering an immediate reboot"
@@ -39,10 +40,15 @@ if __name__ == "__main__":
 	need_to_reboot = stop_xend ()
 	xapi.start ()
 	need_to_reboot = False
-	r = grub.analyse()
+        if os.path.isfile("/etc/default/grub"):
+                r = grub2.analyse()
+        else:
+		r = grub.analyse()
 	if r:
 		need_to_reboot = True
 		replace.file(r[0], r[1])
+        if os.path.isfile("/etc/default/grub"):
+                subprocess.call(["update-grub"])
 	r = network.analyse()
 	if r:
 		need_to_reboot = True

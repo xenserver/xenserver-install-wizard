@@ -6,6 +6,7 @@ DIR?=/usr/share/xenserver-install-wizard
 install:
 	mkdir -p $(DESTDIR)/$(DIR)
 	install -m 0644 \
+		grub2.py \
 		grub.py \
 		hostname.py \
 		interfaces.py \

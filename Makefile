@@ -8,13 +8,16 @@ install:
 	install -m 0644 \
 		grub.py \
 		hostname.py \
+		interfaces.py \
 		iptables.py \
 		logging.py \
-		networking.py 
+		network.py \
+		networkscripts.py \
 		openstack.py \
 		replace.py \
-		storage.py 
+		storage.py \
 		templates.py \
+		toolstack.py \
 		tui.py \
 		xapi.py \
 		$(DESTDIR)/$(DIR)

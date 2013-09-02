@@ -69,6 +69,9 @@ def analyse(filename = GRUB_CONF):
 	if "xen" in default_entry.lower():
 		print >>sys.stderr, "OK: default kernel is xen"
 		return
+
+	if default_entry == "":
+		default_entry = kernels[0]
  
 	if not(tui.yesno("Would you like me to make xen the default in grub.conf?")):
 		print >>sys.stderr, "WARNING: system is not going to boot xen by default"

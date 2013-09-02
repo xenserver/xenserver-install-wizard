@@ -37,7 +37,7 @@ def get_default(lines):
         for line in lines:
                 line = line.strip()
                 if line.startswith("GRUB_DEFAULT="):
-                        return line[len("GRUB_DEFAULT="):].strip('"')
+                        return line[len("GRUB_DEFAULT="):].strip("'\"")
 
 
 def analyse(filename = GRUB_CONF):
@@ -101,7 +101,7 @@ def analyse(filename = GRUB_CONF):
 		for line in lines:
 			tmp = line.strip()
 			if tmp.startswith("GRUB_DEFAULT="):
-				new_lines.append("GRUB_DEFAULT='%s'\n" % xen_entry)
+				new_lines.append("GRUB_DEFAULT='%s'" % xen_entry)
 			else:
 				new_lines.append(line[0:-1])
 

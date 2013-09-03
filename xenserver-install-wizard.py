@@ -47,8 +47,8 @@ if __name__ == "__main__":
 	if r:
 		need_to_reboot = True
 		replace.file(r[0], r[1])
-        if os.path.isfile("/etc/default/grub"):
-                subprocess.call(["update-grub"])
+		if os.path.isfile("/etc/default/grub"):
+			subprocess.call(["update-grub"])
 	r = network.analyse()
 	if r:
 		need_to_reboot = True

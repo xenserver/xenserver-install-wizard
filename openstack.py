@@ -31,7 +31,7 @@ def analyse():
 		if len(hosts) <> 1:
 			print >>sys.stderr, "ERROR: host is already in a pool"
 			return
-		path = "/var/run/sr-mount/%s" % uuid
+		path = "/var/lib/xapi/sr-mount/%s" % uuid
 		mkdir(path)
 		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "ext", "default", False, {})
 		pbd = x.xenapi.PBD.create({ "host": hosts[0], "SR": sr, "device_config": {"path": path}})

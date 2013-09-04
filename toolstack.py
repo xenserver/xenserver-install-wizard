@@ -9,7 +9,7 @@ def load_file(filename):
 	finally:
 		f.close()
 
-def analyse(filename = etc_default_xen):
+def analyse(tui, filename = etc_default_xen):
 	old_contents = load_file(filename)
 	new_contents = []
 	update_needed = False
@@ -28,7 +28,8 @@ def analyse(filename = etc_default_xen):
 		return ((filename, new_contents),)
 
 if __name__ == "__main__":
-	file_changes = analyse("toolstack/etc-default-xen")
+	from Tui import tui
+	file_changes = analyse(Tui(False), "toolstack/etc-default-xen")
 	for change in file_changes:
 		print "I propose changing %s to:" % change[0]
 		for line in change[1]:

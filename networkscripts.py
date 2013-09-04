@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, subprocess, os, os.path
-import xapi, tui, network
+import xapi, network
 
 def sysconfig_file(device):
 	return "/etc/sysconfig/network-scripts/ifcfg-%s" % device
@@ -27,7 +27,7 @@ def save_sysconfig(x):
 		lines.append("%s=\"%s\"" % (k, x[k]))
 	return lines
 
-def analyse(config):
+def analyse(tui, config):
 	mgmt = config["management"]
 	devices = config["devices"]
 
@@ -71,11 +71,12 @@ def restart():
 		 print >>sys.stderr, "FAILED: to restart networking"
 
 if __name__ == "__main__":
+	from tui import Tui
 	config = {
 		"devices": [ "em1", "em2" ],
 		"management": "em1",
 	}
-	file_changes = analyse(config)
+	file_changes = analyse(Tui(False), config)
 	if file_changes:
 		for change in file_changes:
 			print "I propose changing %s to:" % change[0]

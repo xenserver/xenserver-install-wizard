@@ -12,7 +12,7 @@ def load_interfaces(filename):
 	finally:
 		f.close()
 
-def analyse(config, filename = interfaces):
+def analyse(tui, config, filename = interfaces):
 	# 'config' is the system configuration from xapi + the user's choice of
 	# a management PIF. 'filename' is the path of the interfaces file.
 	devices = config["devices"]
@@ -77,12 +77,13 @@ def restart():
 		 print >>sys.stderr, "FAILED: to restart networking"
 
 if __name__ == "__main__":
+	from tui import Tui
 	old_interfaces = "networking/etc-network-interfaces"
 	config = {
 		"devices": [ "em1", "em2" ],
 		"management": "em1",
 	}
-	result = analyse(config, old_interfaces)
+	result = analyse(Tui(False), config, old_interfaces)
 	if not result:
 		print "ERROR: I'm proposing to make no changes"
 		exit(1)

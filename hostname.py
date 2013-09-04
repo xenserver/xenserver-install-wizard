@@ -8,7 +8,7 @@ def hostname():
 	y = x.communicate()
 	return str(y[0]).strip()
 
-def analyse():
+def analyse(tui):
 	x = xapi.open()
 	x.login_with_password("root", "")
 	try:

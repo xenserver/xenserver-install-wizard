@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 import sys, subprocess
-import xapi, tui
+import xapi
 
 def mkdir(path):
 	x = subprocess.call(["/bin/mkdir", "-p", path])
 	if x <> 0:
 		print >>sys.stderr, "ERROR: failed to mkdir -p %s" % path
 
-def analyse():
+def analyse(tui):
 	x = xapi.open()
 	x.login_with_password("root", "")
 	try:
@@ -35,5 +35,6 @@ def analyse():
 		x.logout()
 
 if __name__ == "__main__":
-	analyse()
+	from tui import Tui
+	analyse(Tui(False))
 	

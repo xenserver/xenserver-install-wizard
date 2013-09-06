@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 import sys, subprocess, os, os.path, platform
-import xapi, tui, interfaces, networkscripts
+import xapi, interfaces, networkscripts
 
 # Common, distribution-agnostic network interface configuration code.
 # This is mostly code to interact with xapi and the user.
 
-def list_devices():
+def list_devices(tui):
 	"""Use xapi to query the PIFs on the local host"""
 	x = xapi.open()	
 	x.login_with_password("root", "")
@@ -24,7 +24,7 @@ def list_devices():
 			if pifs[pif]["management"]:
 				print >>sys.stderr, "OK: found a configured management interface"
 				return no_configuration
-		if not(tui.yesno("Would you like me to set up host networking for XenServer?")):
+		if not(tui.yesno("Would you like me to set up host networking for XenServer?", True)):
 			print >>sys.stderr, "WARNING: host networking is not set up"
 			return no_configuration
 		print "PIF scan %s" % hosts[0]
@@ -45,14 +45,14 @@ def list_devices():
 	finally:
 		x.logout()
 
-def choose_management(config):
+def choose_management(tui, config):
 	"""Ask the user which PIF should be used for management traffic"""
 	options = []
 	for d in config["devices"]:
 		options.append((d, "<insert description>",))
 	if options == []:
 		return config
-	mgmt = tui.choose("Please select a management interface", options)
+	mgmt = tui.choose("Please select a management interface", options, options[0][0])
 	config["management"] = mgmt
 	return config
 
@@ -77,15 +77,15 @@ def configure(config, new_interfaces):
 debian_like = [ "ubuntu", "debian" ]
 rhel_like = [ "fedora", "redhat", "centos" ]
 
-def analyse():
-	config = list_devices()
-	config = choose_management(config)
+def analyse(tui):
+	config = list_devices(tui)
+	config = choose_management(tui, config)
 	result = None
 	distribution = platform.linux_distribution()[0].lower()
 	if distribution in debian_like:
-		result = interfaces.analyse(config)
+		result = interfaces.analyse(tui, config)
 	elif distribution in rhel_like:
-		result = networkscripts.analyse(config)
+		result = networkscripts.analyse(tui, config)
 	if not result:
 		return None
 	file_changes, new_interfaces = result

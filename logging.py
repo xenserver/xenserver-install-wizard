@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
 import sys, subprocess
-import tui
 
 RSYSLOGD_CONF="/etc/rsyslog.conf"
 
-def analyse(filename=RSYSLOGD_CONF):
+def analyse(tui, filename=RSYSLOGD_CONF):
 	f = open(filename, "r")
 	lines = f.readlines()
 	f.close()
@@ -31,11 +30,11 @@ def analyse(filename=RSYSLOGD_CONF):
 	debug_needed = False
 	if found_imuxsock and not rate_limit_interval and not rate_limit_burst:
 		print >>sys.stderr, "logging: I recommend setting up rate-limiting"
-		if tui.yesno("Would you like me to adjust log rate-limiting to improve debugability?"):
+		if tui.yesno("Would you like me to adjust log rate-limiting to improve debugability?", True):
 			rate_limiting_needed = True
 	if var_log_messages and ("*.debug" not in var_log_messages):
 		print >>sys.stderr, "logging: I recommend enabling debug logging"
-		if tui.yesno("Would you like to enable logging for debug level messages?"):
+		if tui.yesno("Would you like to enable logging for debug level messages?", True):
 			debug_needed = True
 	if not rate_limiting_needed and not debug_needed:
 		return None
@@ -61,10 +60,11 @@ def restart():
 		print >>sys.stderr, "FAILED: to restart rsyslog"
 
 if __name__ == "__main__":
+	from tui import Tui
 	filename = RSYSLOGD_CONF
 	if len(sys.argv) == 2:
 		filename = sys.argv[1]
-	result = analyse(filename = filename)
+	result = analyse(Tui(False), filename = filename)
 	if result:
 		print "I propose the file %s is changed to read:" % result[0]
 		for line in result[1]:

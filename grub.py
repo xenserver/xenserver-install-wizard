@@ -2,8 +2,6 @@
 
 import sys, os, os.path, tempfile
 
-import tui
-
 GRUB_CONF = "/boot/grub/grub.conf"
 
 def list_kernels(lines):
@@ -58,7 +56,7 @@ def make_xen_based_on((name, args,)):
 			args2.append("\t" + a)
 	return (("title xen", args2,))
 
-def analyse(filename = GRUB_CONF):
+def analyse(tui, filename = GRUB_CONF):
 
 	f = open(filename, "r")
 	lines = f.readlines()
@@ -75,7 +73,7 @@ def analyse(filename = GRUB_CONF):
 		print >>sys.stderr, "OK: default kernel is xen"
 		return
 	if xen_index == []:
-		if not(tui.yesno("Would you like me to add xen, based on your current default kernel, to grub.conf and make it the default?")):
+		if not(tui.yesno("Would you like me to add xen, based on your current default kernel, to grub.conf and make it the default?", True)):
 			print >>sys.stderr, "WARNING: system is not going to boot xen by default"
 			return
 		new_lines = []
@@ -92,7 +90,7 @@ def analyse(filename = GRUB_CONF):
 			new_lines.append(line)
 		return (filename, new_lines)
 	else:
-		if not(tui.yesno("Would you like me to make xen the default in grub.conf?")):
+		if not(tui.yesno("Would you like me to make xen the default in grub.conf?", True)):
 			print >>sys.stderr, "WARNING: system is not going to boot xen by default"
 			return
 		new_lines = []
@@ -105,10 +103,11 @@ def analyse(filename = GRUB_CONF):
 		return (filename, new_lines)
 
 if __name__ == "__main__":
+	from tui import Tui
 	filename = GRUB_CONF
 	if len(sys.argv) == 2:
 		filename = sys.argv[1]
-	result = analyse(filename = filename)
+	result = analyse(Tui(False), filename = filename)
 	if result:
 		print "I propose to replace %s with:" % result[0]
 		for line in result[1]:

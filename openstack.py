@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, subprocess
-import xapi, tui
+import xapi
 
 def mkdir(path):
 	x = subprocess.call(["/bin/mkdir", "-p", path])
@@ -16,7 +16,7 @@ def generate_uuid():
 		print >>sys.stderr, "ERROR: failed to generate a uuid"
         return str(y[0].strip())
 
-def analyse():
+def analyse(tui):
 	x = xapi.open()
 	x.login_with_password("root", "")
 	try:
@@ -24,7 +24,7 @@ def analyse():
 		for sr in srs.keys():
 			if srs[sr]["type"] == "ext":
 				return
-		if not(tui.yesno("Would you like to configure some local storage for openstack?")):
+		if not(tui.yesno("Would you like to configure some local storage for openstack?", True)):
 			return
 		uuid = generate_uuid ()
 		hosts = x.xenapi.host.get_all()
@@ -46,5 +46,6 @@ def analyse():
 		x.logout()
 
 if __name__ == "__main__":
-	analyse()
+	from tui import Tui
+	analyse(Tui(False))
 	

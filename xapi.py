@@ -38,6 +38,8 @@ def start():
 	for service in services:
 		if service not in already_started:
 			start_service(service)
+	# Wait for XAPI to start
+	time.sleep(5)
 
 def open():
 	return XenAPI.xapi_local()

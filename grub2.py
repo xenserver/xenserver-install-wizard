@@ -8,7 +8,6 @@ import re
 import shutil
 import subprocess
 import tempfile
-import tui
 
 GRUB_CONF = "/etc/default/grub"
 
@@ -40,7 +39,7 @@ def get_default(lines):
                         return line[len("GRUB_DEFAULT="):].strip("'\"")
 
 
-def analyse(filename = GRUB_CONF):
+def analyse(tui, filename = GRUB_CONF):
 
 	f = open(filename, "r")
 	lines = f.readlines()
@@ -73,7 +72,7 @@ def analyse(filename = GRUB_CONF):
 	if default_entry == "":
 		default_entry = kernels[0]
  
-	if not(tui.yesno("Would you like me to make xen the default in grub.conf?")):
+	if not(tui.yesno("Would you like me to make xen the default in grub.conf?", True)):
 		print >>sys.stderr, "WARNING: system is not going to boot xen by default"
 		return
 
@@ -111,10 +110,11 @@ def analyse(filename = GRUB_CONF):
 	return (filename, new_lines)
 
 if __name__ == "__main__":
+	from tui import Tui
 	filename = GRUB_CONF
 	if len(sys.argv) == 2:
 		filename = sys.argv[1]
-	result = analyse(filename = filename)
+	result = analyse(Tui(False), filename = filename)
 	if result:
 		print "I propose to replace %s with:" % result[0]
 		print "".join(result[1])

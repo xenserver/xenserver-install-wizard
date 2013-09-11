@@ -28,7 +28,6 @@ def save_sysconfig(x):
 	return lines
 
 def analyse(tui, config):
-	mgmt = config["management"]
 	devices = config["devices"]
 
 	x = xapi.open()	

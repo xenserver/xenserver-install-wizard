@@ -22,7 +22,7 @@ def analyse(tui):
 	try:
 		srs = x.xenapi.SR.get_all_records()
 		for sr in srs.keys():
-			if srs[sr]["type"] == "ext":
+			if "created_by_install_wizard_for_openstack" in srs[sr]["other_config"].keys():
 				return
 		if not(tui.yesno("Would you like to configure some local storage for openstack?", True)):
 			return
@@ -33,7 +33,8 @@ def analyse(tui):
 			return
 		path = "/var/lib/xapi/sr-mount/%s" % uuid
 		mkdir(path)
-		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "ext", "default", False, {})
+		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "ffs", "default", False, {})
+		x.xenapi.SR.add_to_other_config(sr, "created_by_install_wizard_for_openstack", "")
 		pbd = x.xenapi.PBD.create({ "host": hosts[0], "SR": sr, "device_config": {"path": path}})
 		x.xenapi.PBD.plug(pbd)
 		pool = x.xenapi.pool.get_all()[0]

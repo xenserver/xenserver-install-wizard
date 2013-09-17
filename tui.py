@@ -13,7 +13,7 @@ class Tui():
 		self.auto_default = auto_default
 
 	def yesno(self, question, default=None):
-		if self.auto_default and default:
+		if self.auto_default and default is not None:
 			return default
 		width = len(question)
 		if width > 80:
@@ -25,7 +25,7 @@ class Tui():
 		return False
 
 	def choose(self, question, options, default=None):
-		if self.auto_default and default:
+		if self.auto_default and default is not None:
 			return default
 		cmd = [ find_whiptail(), "--menu", question, "10", "50", str(len(options)) ]
 		for option in options:
@@ -36,7 +36,7 @@ class Tui():
 		return str(y[1])
 
 	def text(self, question, default):
-		if self.auto_default and default:
+		if self.auto_default:
 			return default
 		cmd = [ find_whiptail(), "--inputbox", question, "8", "50", default ]
 		x = subprocess.Popen(cmd, stderr = subprocess.PIPE)

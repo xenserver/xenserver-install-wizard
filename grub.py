@@ -47,7 +47,7 @@ def make_xen_based_on((name, args,)):
 	kernelpath = "/boot/xen.gz"
 	if os.path.ismount("/boot"):
 		kernelpath = "/xen.gz"
-	kernel = "kernel %s dom0_mem=2048M,max:2048M loglvl=all guest_loglvl=all" % kernelpath
+	kernel = "kernel %s loglvl=all guest_loglvl=all" % kernelpath
 	for a in args:
 		a = a.strip()
 		if a.startswith("kernel "):

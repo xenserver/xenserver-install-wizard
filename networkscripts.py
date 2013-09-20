@@ -77,9 +77,9 @@ if __name__ == "__main__":
 		"devices": [ "em1", "em2" ],
 		"management": "em1",
 	}
-	file_changes = analyse(Tui(False), config)
-	if file_changes:
-		for change in file_changes:
+	result = analyse(Tui(False), config)
+	if result:
+		for change in result[0]:
 			print "I propose changing %s to:" % change[0]
 			for line in change[1]:
 				print line

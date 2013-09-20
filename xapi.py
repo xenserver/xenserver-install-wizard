@@ -26,6 +26,7 @@ services = [
 	"forkexecd",
 	"xcp-networkd",
 	"ffs",
+	"squeezed",
 	"xapi",
 ]
 

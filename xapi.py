@@ -35,13 +35,29 @@ for service in services:
 	if is_service_running(service):
 		already_started.append(service)
 
+def open():
+	return XenAPI.xapi_local()
+
 def start():
 	for service in services:
 		if service not in already_started:
 			start_service(service)
-	# Wait for XAPI to start
-	time.sleep(5)
 
-def open():
-	return XenAPI.xapi_local()
+	# Wait for XAPI to start - up to 30 seconds (5*6)
+	attempts = 6
+	login_works = False
+	while (attempts > 0):
+		try:
+			x = open()
+			# on success, we leak precisely 1 session
+			x.login_with_password("root", "")
+			login_works = True
+			break
+		except Exception, e:
+			print >>sys.stderr, "Caught %s, retrying in 5s" % (str(e))
+			time.sleep(5)
+			attempts = attempts - 1
+	if login_works == False:
+		raise Exception("Could not log in to XAPI")
+
 

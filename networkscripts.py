@@ -14,6 +14,8 @@ def load_sysconfig(device):
 		results = {}
 		for line in f.readlines():
 			bits = line.split("=")
+			if len(bits) < 2:
+				continue
 			key = bits[0].strip().strip("'").strip("\"")
 			val = bits[1].strip().strip("'").strip("\"")
 			results[key] = val

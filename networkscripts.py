@@ -14,6 +14,8 @@ def load_sysconfig(device):
 		results = {}
 		for line in f.readlines():
 			bits = line.split("=")
+			if len(bits) < 2:
+				continue
 			key = bits[0].strip().strip("'").strip("\"")
 			val = bits[1].strip().strip("'").strip("\"")
 			results[key] = val
@@ -75,9 +77,9 @@ if __name__ == "__main__":
 		"devices": [ "em1", "em2" ],
 		"management": "em1",
 	}
-	file_changes = analyse(Tui(False), config)
-	if file_changes:
-		for change in file_changes:
+	result = analyse(Tui(False), config)
+	if result:
+		for change in result[0]:
 			print "I propose changing %s to:" % change[0]
 			for line in change[1]:
 				print line

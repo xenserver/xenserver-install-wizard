@@ -10,13 +10,14 @@ import subprocess
 import tempfile
 
 GRUB_CONF = "/etc/default/grub"
+GRUB_CFG_GLOB = "/boot/grub*/grub.cfg"
 
 editenv = "grub-editenv"
 if platform.dist()[0] in ['fedora', 'redhat', 'centos']:
 	editenv = "grub2-editenv"
 
-def list_kernels_grub2():
-        grub_cfg = glob("/boot/grub*/grub.cfg")[0]
+def list_kernels_grub2(grub_cfg_glob = GRUB_CFG_GLOB):
+        grub_cfg = glob(grub_cfg_glob)[0]
 
 	f = open(grub_cfg, "r")
 	lines = f.readlines()
@@ -39,15 +40,16 @@ def get_default(lines):
                         return line[len("GRUB_DEFAULT="):].strip("'\"")
 
 
-def analyse(tui, filename = GRUB_CONF):
+def analyse(tui, etc_default_grub = GRUB_CONF, grub_cfg_glob = GRUB_CFG_GLOB):
 
-	f = open(filename, "r")
+	f = open(etc_default_grub, "r")
 	lines = f.readlines()
 	f.close()
 
 	default_entry = get_default(lines)
+	print >>sys.stderr, "current GRUB_DEFAULT=%s" % default_entry
 
-	kernels = list_kernels_grub2()
+	kernels = list_kernels_grub2(grub_cfg_glob)
 
 	default_type = "name"
 	if default_entry == "saved":
@@ -62,7 +64,8 @@ def analyse(tui, filename = GRUB_CONF):
 			break
 
 	if default_entry.isdigit():
-		default_type = "digit"
+		# Even if the user specified the default_entry as a digit,
+		# switch to a "name" label for extra clarity
 		default_entry = kernels[int(default_entry)]	
 
 	if "xen" in default_entry.lower():
@@ -107,14 +110,17 @@ def analyse(tui, filename = GRUB_CONF):
 			else:
 				new_lines.append(line[0:-1])
 
-	return (filename, new_lines)
+	return (etc_default_grub, new_lines)
 
 if __name__ == "__main__":
 	from tui import Tui
-	filename = GRUB_CONF
-	if len(sys.argv) == 2:
-		filename = sys.argv[1]
-	result = analyse(Tui(False), filename = filename)
+	etc_default_grub = GRUB_CONF
+	grub_cfg_glob = GRUB_CFG_GLOB
+	if len(sys.argv) > 1:
+		etc_default_grub = sys.argv[1]
+	if len(sys.argv) > 2:
+		grub_cfg_glob = sys.argv[2]
+	result = analyse(Tui(False), etc_default_grub = etc_default_grub, grub_cfg_glob = grub_cfg_glob)
 	if result:
 		print "I propose to replace %s with:" % result[0]
-		print "".join(result[1])
+		print "\n".join(result[1])

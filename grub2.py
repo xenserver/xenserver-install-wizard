@@ -64,7 +64,8 @@ def analyse(tui, etc_default_grub = GRUB_CONF, grub_cfg_glob = GRUB_CFG_GLOB):
 			break
 
 	if default_entry.isdigit():
-		default_type = "digit"
+		# Even if the user specified the default_entry as a digit,
+		# switch to a "name" label for extra clarity
 		default_entry = kernels[int(default_entry)]	
 
 	if "xen" in default_entry.lower():

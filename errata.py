@@ -17,6 +17,30 @@ def register_services(dry_run):
 			if subprocess.call(["update-rc.d", service, "defaults"]) <> 0:
 				print >>sys.stderr, "FAILED to run: update-rc.d %s defaults" % service
 
+def storage_plugin_directories(dry_run):
+	# Work around mismatch between where xapi looks for SM plugins,
+	# where the SM plugins look for themselves, and where they actually
+	# are.
+	if os.path.exists("/usr/lib64/xcp-sm"):
+		target_of_link = None
+		try:
+			target_of_link = os.readlink("/usr/lib/xapi/sm")
+		except:
+			pass
+		if target_of_link <> "/usr/lib64/xcp-sm":
+			try:
+				if dry_run:
+					print >>sys.stdout, "rm -f /usr/lib/xapi/sm"
+				else:
+					os.unlink("/usr/lib/xapi/sm")
+			except:
+				pass
+			if dry_run:
+				print >>sys.stdout, "ln -s /usr/lib64/xcp-sm /usr/lib/xapi/sm"
+			else:
+				os.symlink("/usr/lib64/xcp-sm", "/usr/lib/xapi/sm")
+
+
 debian_like = [ "ubuntu", "debian" ]
 rhel_like = [ "fedora", "redhat", "centos" ]
 
@@ -25,7 +49,7 @@ def analyse(dry_run = False):
 	if distribution in debian_like:
 		register_services(dry_run)
 	elif distribution in rhel_like:
-		pass
+		storage_plugin_directories(dry_run)
 
 if __name__ == "__main__":
 	analyse(dry_run = True)

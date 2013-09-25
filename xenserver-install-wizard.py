@@ -2,6 +2,7 @@
 
 import sys, subprocess, argparse
 import xapi, replace, grub, grub2, network, iptables, storage, templates, logging, hostname, openstack, toolstack
+import errata
 import platform
 import os
 from tui import Tui
@@ -69,6 +70,7 @@ if __name__ == "__main__":
 	openstack.analyse(tui)
 	hostname.analyse(tui)
 	templates.create()
+	errata.analyse()
 	print "Welcome to XenServer!"
 	if need_to_reboot:
 		if args.auto_reboot:

@@ -60,4 +60,10 @@ def start():
 	if login_works == False:
 		raise Exception("Could not log in to XAPI")
 
-
+def sync():
+	x = open ()
+	x.login_with_password("root", "") # let this leak
+	if x.xenapi.pool.sync_database() == "":
+		print >>sys.stderr, "xapi database flushed to disk"
+	else:
+		raise "Failed to flush xapi database to disk"

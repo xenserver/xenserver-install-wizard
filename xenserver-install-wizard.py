@@ -71,6 +71,7 @@ if __name__ == "__main__":
 	hostname.analyse(tui)
 	templates.create()
 	errata.analyse()
+	xapi.sync()
 	print "Welcome to XenServer!"
 	if need_to_reboot:
 		if args.auto_reboot:

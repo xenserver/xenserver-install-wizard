@@ -69,6 +69,7 @@ if __name__ == "__main__":
 	r = iptables.analyse(tui)
 	if r:
 		replace.file(r[0], r[1])
+                iptables.restart()
 	storage.analyse(tui)
 	openstack.analyse(tui)
 	hostname.analyse(tui)

@@ -51,8 +51,11 @@ if __name__ == "__main__":
 	need_to_reboot = False
         if os.path.isfile("/etc/default/grub"):
                 r = grub2.analyse(tui)
-        else:
+        elif os.path.isfile("/boot/grub/grub.conf"):
 		r = grub.analyse(tui)
+        else:
+                print >>sys.stderr, "No bootloader to update, skipping"
+                r = False
 	if r:
 		need_to_reboot = True
 		replace.file(r[0], r[1])

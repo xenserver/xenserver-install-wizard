@@ -15,12 +15,18 @@ def analyse(tui):
 		pool = x.xenapi.pool.get_all()[0]
 		pool_r = x.xenapi.pool.get_record(pool)
 		default_sr = pool_r["default_SR"]
+		hosts = x.xenapi.host.get_all()
+		
+		# Set iSCSI IQN
+		if not x.xenapi.host.get_other_config(hosts[0]).has_key("iscsi_iqn"):
+			x.xenapi.host.add_to_other_config(hosts[0], "iscsi_iqn",
+				"iqn.2013-12.com.xendomain.xenserver")
+
 		try:
 			sr_r = x.xenapi.SR.get_record(default_sr)
 			print >>sys.stderr, "OK: default SR is set"
 		except:
 			path = tui.text("Where would you like to store disk images?", "/usr/share/xapi/images")
-			hosts = x.xenapi.host.get_all()
 			if len(hosts) <> 1:
 				print >>sys.stderr, "ERROR: host is already in a pool"
 				return

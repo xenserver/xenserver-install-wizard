@@ -23,12 +23,18 @@ def list_kernels(lines):
 	return result
 
 def get_kernel((name, args,)):
+	"""
+
+	>>> get_kernel(('a', []))
+	''
+	"""
 	for arg in args:
 		arg = arg.strip()
 		if arg.startswith("kernel"):
 			bits = arg.split()
 			kernel = bits[1]
 			return kernel
+	return ''
 
 def get_default(lines):
 	for line in lines:

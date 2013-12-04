@@ -45,10 +45,10 @@ debian_like = [ "ubuntu", "debian" ]
 rhel_like = [ "fedora", "redhat", "centos" ]
 
 def analyse(dry_run = False):
-	distribution = platform.linux_distribution()[0].lower()
-	if distribution in debian_like:
+	dist = platform.linux_distribution(full_distribution_name=False)[0].lower()
+	if dist in debian_like:
 		register_services(dry_run)
-	elif distribution in rhel_like:
+	elif dist in rhel_like:
 		storage_plugin_directories(dry_run)
 
 if __name__ == "__main__":

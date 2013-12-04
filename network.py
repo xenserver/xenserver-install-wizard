@@ -81,10 +81,10 @@ def analyse(tui):
 	config = list_devices(tui)
 	config = choose_management(tui, config)
 	result = None
-	distribution = platform.linux_distribution()[0].lower()
-	if distribution in debian_like:
+	dist = platform.linux_distribution(full_distribution_name=False)[0].lower()
+	if dist in debian_like:
 		result = interfaces.analyse(tui, config)
-	elif distribution in rhel_like:
+	elif dist in rhel_like:
 		result = networkscripts.analyse(tui, config)
 	if not result:
 		return None
@@ -94,8 +94,8 @@ def analyse(tui):
 
 # Maybe time to start ... using OO?
 def restart():
-	distribution = platform.linux_distribution()[0].lower()
-	if distribution in debian_like:
+	dist = platform.linux_distribution(full_distribution_name=False)[0].lower()
+	if dist in debian_like:
 		interfaces.restart()
-	elif distribution in rhel_like:
+	elif dist in rhel_like:
 		networkscripts.restart()

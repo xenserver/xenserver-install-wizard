@@ -18,7 +18,7 @@ def stop_xend(tui):
 	need_to_reboot = False
 
 	print >>sys.stderr, "Permanently stopping xend"
-	distro = platform.dist()[0].lower()
+	distro = platform.linux_distribution(full_distribution_name=False)[0].lower()
 	if distro in ["fedora", "redhat", "centos"]:
 		if subprocess.call(["chkconfig", "--level", "345", "xend", "off"]) <> 0:
 			print >>sys.stderr, "FAILED: to disable xend"

@@ -13,7 +13,8 @@ GRUB_CONF = "/etc/default/grub"
 GRUB_CFG_GLOB = "/boot/grub*/grub.cfg"
 
 editenv = "grub-editenv"
-if platform.dist()[0] in ['fedora', 'redhat', 'centos']:
+dist = platform.linux_distribution(full_distribution_name=False)[0]
+if dist in ['fedora', 'redhat', 'centos']:
 	editenv = "grub2-editenv"
 
 def list_kernels_grub2(grub_cfg_glob = GRUB_CFG_GLOB):

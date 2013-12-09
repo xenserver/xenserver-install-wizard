@@ -57,12 +57,17 @@ def analyse(tui, config):
 
 			if "BOOTPROTO" in sysconfig and sysconfig["BOOTPROTO"] == "dhcp":
 				interfaces_to_reconfigure[d] = ("DHCP", "", "", "", "")
-			if "BOOTPROTO" in sysconfig and sysconfig["BOOTPROTO"] == "none":
-				if "IPADDR" in sysconfig and "NETWORK" in sysconfig and "NETMASK" in sysconfig:
+			if "BOOTPROTO" in sysconfig and (sysconfig["BOOTPROTO"] == "none" or sysconfig["BOOTPROTO"] == "static"):
+				if "IPADDR" in sysconfig and "NETMASK" in sysconfig:
 					ipaddr = sysconfig["IPADDR"]
-					network = sysconfig["NETWORK"]
+					if "GATEWAY" in sysconfig:
+						gateway = sysconfig["GATEWAY"]
+					elif "NETWORK" in sysconfig:
+						gateway = sysconfig["NETWORK"]
+					else:
+						gateway = ""
 					netmask = sysconfig["NETMASK"]
-					interfaces_to_reconfigure[d] = ("Static", ipaddr, netmask, network, "")
+					interfaces_to_reconfigure[d] = ("Static", ipaddr, netmask, gateway, "")
 		return (file_changes, interfaces_to_reconfigure)
 	finally:
 		x.logout()

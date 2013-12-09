@@ -66,7 +66,7 @@ def configure(config, new_interfaces):
 			if mode == "DHCP":
 				print >> sys.stderr, "Configuring %s with DHCP" % device
 			else:
-				print >> sys.stderr, "Configuring %s with static IP %s netmask %s gateway %s DNS %s" % (device, mode, address, netmask, gateway, dns)
+				print >> sys.stderr, "Configuring %s with static IP %s netmask %s gateway %s DNS %s" % (device, address, netmask, gateway, dns)
 			x.xenapi.PIF.reconfigure_ip(config["device_to_pif"][device], mode, address, netmask, gateway, dns)
 		if "management" in config:
 			print >> sys.stderr, "Configuring %s as the management interface" % config["management"]

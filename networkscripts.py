@@ -13,6 +13,11 @@ def load_sysconfig(device):
 	try:
 		results = {}
 		for line in f.readlines():
+                        if '#' in line:
+                            line = line.split('#')[0]
+                        line = line.strip()
+                        if len(line) == 0:
+                            continue
 			bits = line.split("=")
 			if len(bits) < 2:
 				continue

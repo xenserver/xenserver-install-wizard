@@ -62,12 +62,18 @@ def analyse(tui, config, filename = interfaces):
 		elif device_name != None and line.strip().startswith("gateway "):
 			device_gateway = line.strip()[len("gateway "):]
 			new_interfaces.append(line)
-		elif device_name != None and (line == "" or line[0] == " " or line[0] == "\t"):
-			interfaces_to_reconfigure[device_name] = ("Static", device_name, device_address, device_netmask, device_gateway)
-			new_interfaces.append(line)
 		else:
 			new_interfaces.append(line)
-		
+
+		if device_name and device_address and device_netmask and device_gateway:
+			print >>sys.stderr, 'Adding %s (addr:%s, netmask:%s, gw:%s)'%(
+				device_name, device_address, device_netmask, device_gateway)
+			interfaces_to_reconfigure[device_name] = ("static", device_address, device_netmask, device_gateway, "")
+			device_name=None
+		elif device_name:
+			print >>sys.stderr, 'WARNING: A parameter is missing for %s (addr:%s, netmask:%s, gw:%s)'%(
+				device_name, device_address, device_netmask, device_gateway)
+
 	if need_to_replace_interfaces:
 		file_changes.append((filename, new_interfaces),)
 		return (file_changes, interfaces_to_reconfigure)

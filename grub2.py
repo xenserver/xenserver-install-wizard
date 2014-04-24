@@ -108,6 +108,8 @@ def analyse(tui, etc_default_grub = GRUB_CONF, grub_cfg_glob = GRUB_CFG_GLOB):
 			tmp = line.strip()
 			if tmp.startswith("GRUB_DEFAULT="):
 				new_lines.append("GRUB_DEFAULT='%s'" % xen_entry)
+			elif tmp.startswith("GRUB_DISABLE_LINUX_UUID="):
+				new_lines.append("GRUB_DISABLE_LINUX_UUID='false'")
 			else:
 				new_lines.append(line[0:-1])
 

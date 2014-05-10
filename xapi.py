@@ -25,6 +25,7 @@ services = [
 	"message-switch",
 	"forkexecd",
 	"xcp-networkd",
+	"xcp-rrdd",
 	"ffs",
 	"squeezed",
 	"xapi",

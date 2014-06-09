@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import time, sys, os, os.path
+import traceback
 import XenAPI
-from subprocess import call
+from subprocess import call, check_output
 
 def is_service_running(name):
 	x = call(["service", name, "status"])
@@ -36,10 +37,25 @@ for service in services:
 	if is_service_running(service):
 		already_started.append(service)
 
-def open():
+def pre_start_check():
+        try:
+                with open("/proc/xen/capabilities", "r") as capabilities:
+                        if capabilities.read().strip() != 'control_d':
+                                print >>sys.stderr, "\nCannot start XAPI unless we are running in dom0 (nested Xen?)\n"
+                                return False
+        except:
+                traceback.print_exc()
+                print >>sys.stderr, "Not running under Xen - but will attempt to start XAPI anyway"
+
+        return True
+
+def connect():
 	return XenAPI.xapi_local()
 
 def start():
+        if pre_start_check() == False:
+                raise Exception("XAPI pre-start checks failed, you may need to reboot")
+
 	for service in services:
 		if service not in already_started:
 			start_service(service)
@@ -49,12 +65,13 @@ def start():
 	login_works = False
 	while (attempts > 0):
 		try:
-			x = open()
+			x = connect()
 			# on success, we leak precisely 1 session
 			x.login_with_password("root", "")
 			login_works = True
 			break
 		except Exception, e:
+                        traceback.print_exc()
 			print >>sys.stderr, "Caught %s, retrying in 5s" % (str(e))
 			time.sleep(5)
 			attempts = attempts - 1
@@ -62,7 +79,7 @@ def start():
 		raise Exception("Could not log in to XAPI")
 
 def sync():
-	x = open ()
+	x = connect()
 	x.login_with_password("root", "") # let this leak
 	if x.xenapi.pool.sync_database() == "":
 		print >>sys.stderr, "xapi database flushed to disk"

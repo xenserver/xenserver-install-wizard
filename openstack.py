@@ -17,7 +17,7 @@ def generate_uuid():
         return str(y[0].strip())
 
 def analyse(tui):
-	x = xapi.open()
+	x = xapi.connect()
 	x.login_with_password("root", "")
 	try:
 		srs = x.xenapi.SR.get_all_records()

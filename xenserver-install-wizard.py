@@ -47,8 +47,6 @@ if __name__ == "__main__":
 		replace.file(r[0], r[1])
 		logging.restart()
 	need_to_reboot = stop_xend (tui)
-	xapi.start ()
-	need_to_reboot = False
         if os.path.isfile("/etc/default/grub"):
                 r = grub2.analyse(tui)
         elif os.path.isfile("/boot/grub/grub.conf"):
@@ -61,6 +59,11 @@ if __name__ == "__main__":
 		replace.file(r[0], r[1])
 		if os.path.isfile("/etc/default/grub"):
 			subprocess.call(["update-grub"])
+
+	xapi.start ()
+        # If XAPI started then we don't need to reboot for any grub changes
+	need_to_reboot = False
+
 	r = network.analyse(tui)
 	if r:
 		need_to_reboot = True

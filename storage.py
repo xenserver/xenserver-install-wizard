@@ -9,7 +9,7 @@ def mkdir(path):
 		print >>sys.stderr, "ERROR: failed to mkdir -p %s" % path
 
 def analyse(tui):
-	x = xapi.open()
+	x = xapi.connect()
 	x.login_with_password("root", "")
 	try:
 		pool = x.xenapi.pool.get_all()[0]

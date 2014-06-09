@@ -37,7 +37,7 @@ def save_sysconfig(x):
 def analyse(tui, config):
 	devices = config["devices"]
 
-	x = xapi.open()	
+	x = xapi.connect()
 	x.login_with_password("root", "")
 	try:
 		file_changes = []

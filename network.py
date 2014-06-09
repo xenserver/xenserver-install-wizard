@@ -8,7 +8,7 @@ import xapi, interfaces, networkscripts
 
 def list_devices(tui):
 	"""Use xapi to query the PIFs on the local host"""
-	x = xapi.open()	
+	x = xapi.connect()
 	x.login_with_password("root", "")
 	no_configuration = {
 		"devices": [], # none will be managed by xapi
@@ -58,7 +58,7 @@ def choose_management(tui, config):
 
 def configure(config, new_interfaces):
 	"""Configure [new_interfaces] through the XenAPI"""
-        x = xapi.open() 
+        x = xapi.connect()
         x.login_with_password("root", "")
         try:
 		for device in new_interfaces:

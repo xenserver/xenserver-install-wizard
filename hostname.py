@@ -9,7 +9,7 @@ def hostname():
 	return str(y[0]).strip()
 
 def analyse(tui):
-	x = xapi.open()
+	x = xapi.connect()
 	x.login_with_password("root", "")
 	try:
 		hosts = x.xenapi.host.get_all()

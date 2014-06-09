@@ -27,6 +27,7 @@ services = [
 	"forkexecd",
 	"xcp-networkd",
 	"xcp-rrdd",
+        "xenopsd-xc",
 	"ffs",
 	"squeezed",
 	"xapi",

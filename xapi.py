@@ -3,7 +3,7 @@
 import time, sys, os, os.path
 import traceback
 import XenAPI
-from subprocess import call, check_output
+from subprocess import call
 
 def is_service_running(name):
 	x = call(["service", name, "status"])

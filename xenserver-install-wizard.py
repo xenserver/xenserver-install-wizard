@@ -61,6 +61,8 @@ if __name__ == "__main__":
 			subprocess.call(["update-grub"])
 
 	if args.yes_to_all and need_to_reboot:
+		os.makedirs("/var/xenserver", 0o755)
+		open("/var/xenserver/trigger-wizard", "a").close()
 		# get Xen running
 		reboot()
 

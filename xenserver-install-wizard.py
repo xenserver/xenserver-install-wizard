@@ -60,6 +60,10 @@ if __name__ == "__main__":
 		if os.path.isfile("/etc/default/grub"):
 			subprocess.call(["update-grub"])
 
+	if args.yes_to_all and need_to_reboot:
+		# get Xen running
+		reboot()
+
 	xapi.start ()
         # If XAPI started then we don't need to reboot for any grub changes
 	need_to_reboot = False

@@ -60,6 +60,12 @@ if __name__ == "__main__":
 		if os.path.isfile("/etc/default/grub"):
 			subprocess.call(["update-grub"])
 
+	if args.yes_to_all and need_to_reboot:
+		os.makedirs("/var/xenserver", 0o755)
+		open("/var/xenserver/trigger-wizard", "a").close()
+		# get Xen running
+		reboot()
+
 	xapi.start ()
         # If XAPI started then we don't need to reboot for any grub changes
 	need_to_reboot = False

@@ -7,15 +7,21 @@ import xapi, interfaces, networkscripts
 # should be idempotent and removed as soon as the packages have been
 # fixed properly.
 
+def exec_cmd(cmd, dry_run):
+        str_cmd = " ".join(cmd)
+        if dry_run:
+                print >> sys.stdout, str_cmd
+        else:
+                if subprocess.call(cmd) <> 0:
+                        print >>sys.stderr, "FAILED to run: %s" % str_cmd
+
 def register_services(dry_run):
 	# Work around missing post-run actions in the Debian/Ubuntu
 	# packages. This function is idempotent.
 	for service in [ "message-switch", "forkexecd", "ffs", "xcp-rrdd", "xcp-networkd", "squeezed", "xenopsd-xc", "xapi" ]:
-		if dry_run:
-			print >>sys.stdout, "update-rc.d %s defaults" % service 
-		else:
-			if subprocess.call(["update-rc.d", service, "defaults"]) <> 0:
-				print >>sys.stderr, "FAILED to run: update-rc.d %s defaults" % service
+                if platform.linux_distribution(full_distribution_name=False)[0].lower() == 'debian':
+                        exec_cmd(['sed', '-i', '-e', 's/xenstored/xen/','/etc/init.d/%s' % service], dry_run)
+                exec_cmd(['update-rc.d', service, 'defaults'], dry_run)
 
 def storage_plugin_directories(dry_run):
 	# Work around mismatch between where xapi looks for SM plugins,

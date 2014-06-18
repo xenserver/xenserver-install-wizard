@@ -13,6 +13,8 @@ def reboot():
 	x = subprocess.call(cmd)
 	if x <> 0:
 		print >>sys.stderr, "FAILED: to trigger a reboot (%s)" % (" ".join(cmd))
+	else:
+		exit(0)
 
 def stop_xend(tui):
 	need_to_reboot = False

@@ -36,6 +36,21 @@ def stop_xend(tui):
 		print >>sys.stderr, "FAILED: to stop xend"
 	return need_to_reboot
 
+def reboot_before_continuing(args):
+	if args.auto_reboot:
+		reboot ()
+	else:
+		if args.yes_to_all:
+			# surrounding automation can do more configuration before the reboot
+			print >>sys.stdout, "Please reboot the machine and re-run the wizard."
+			exit(2)
+		if tui.yesno("A reboot is needed before XenServer is fully ready. Would you like to reboot now?", False):
+			reboot()
+		else:
+			print >>sys.stdout, "Please reboot the machine and re-run the wizard."
+			exit(2)
+
+
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--yes-to-all', action='store_true')
@@ -62,11 +77,9 @@ if __name__ == "__main__":
 		if os.path.isfile("/etc/default/grub"):
 			subprocess.call(["update-grub"])
 
-	if args.yes_to_all and need_to_reboot:
-		os.makedirs("/var/xenserver", 0o755)
-		open("/var/xenserver/trigger-wizard", "a").close()
-		# get Xen running
-		reboot()
+	# To run the toolstack we need to reboot with Xen
+	if need_to_reboot:
+		reboot_before_continuing(args)
 
 	xapi.start ()
         # If XAPI started then we don't need to reboot for any grub changes
@@ -87,9 +100,8 @@ if __name__ == "__main__":
 	templates.create()
 	errata.analyse()
 	xapi.sync()
-	print "Welcome to XenServer!"
+
 	if need_to_reboot:
-		if args.auto_reboot:
-			reboot()
-		if tui.yesno("A reboot is needed before XenServer is fully ready. Would you like to reboot now?", False):
-			reboot()
+		reboot_before_continuing(args)
+
+	print "Welcome to XenServer!"

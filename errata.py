@@ -18,7 +18,7 @@ def exec_cmd(cmd, dry_run):
 def register_services(dry_run):
 	# Work around missing post-run actions in the Debian/Ubuntu
 	# packages. This function is idempotent.
-	for service in [ "message-switch", "forkexecd", "ffs", "xcp-rrdd", "xcp-networkd", "squeezed", "xenopsd-xc", "xapi" ]:
+	for service in [ "message-switch", "forkexecd", "ffs", "xcp-rrdd", "xcp-networkd", "squeezed", "xenopsd-xc", "xenopsd-xenlight", "xapi" ]:
                 if platform.linux_distribution(full_distribution_name=False)[0].lower() == 'debian':
                         exec_cmd(['sed', '-i', '-e', 's/xenstored/xen/','/etc/init.d/%s' % service], dry_run)
                 exec_cmd(['update-rc.d', service, 'defaults'], dry_run)

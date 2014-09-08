@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, subprocess
+import sys, subprocess, platform
 
 RSYSLOGD_CONF="/etc/rsyslog.conf"
 
@@ -56,6 +56,12 @@ def analyse(tui, filename=RSYSLOGD_CONF):
 	return (filename, lines2)
 
 def restart():
+	distro = platform.linux_distribution(full_distribution_name=False)[0].lower()
+	if distro in [ 'ubuntu', 'linaro' ]:
+		# Work around logging bug 
+		subprocess.call(["touch", "/var/log/syslog"])
+		subprocess.call(["chown", "syslog.adm", "/var/log/syslog"])
+
 	if subprocess.call(["service", "rsyslog", "restart"]) <> 0:
 		print >>sys.stderr, "FAILED: to restart rsyslog"
 

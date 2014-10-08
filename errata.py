@@ -15,11 +15,26 @@ def exec_cmd(cmd, dry_run):
                 if subprocess.call(cmd) <> 0:
                         print >>sys.stderr, "FAILED to run: %s" % str_cmd
 
+def xenstored_provided_by_xen():
+        distro = platform.linux_distribution(full_distribution_name=False)[0].lower()
+        codename = platform.linux_distribution(full_distribution_name=False)[2].lower()
+
+        # Assume all Debian-based distros will have xenstored provided by xen
+        if distro == 'debian':
+                return True
+        if distro == 'ubuntu':
+                # Except Trusty which does not
+                if codename == 'trusty':
+                        return False
+                return True
+        return False
+        
+
 def register_services(dry_run):
 	# Work around missing post-run actions in the Debian/Ubuntu
 	# packages. This function is idempotent.
 	for service in [ "message-switch", "forkexecd", "ffs", "xcp-rrdd", "xcp-networkd", "squeezed", "xenopsd-xc", "xenopsd-xenlight", "xapi" ]:
-                if platform.linux_distribution(full_distribution_name=False)[0].lower() == 'debian':
+                if xenstored_provided_by_xen():
                         exec_cmd(['sed', '-i', '-e', 's/xenstored/xen/','/etc/init.d/%s' % service], dry_run)
                 exec_cmd(['update-rc.d', service, 'defaults'], dry_run)
 

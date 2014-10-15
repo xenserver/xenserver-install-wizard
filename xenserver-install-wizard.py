@@ -3,7 +3,6 @@
 import sys, subprocess, argparse
 import xapi, replace, grub, grub2, network, iptables, storage, templates, logging, hostname, openstack, toolstack
 import errata
-import platform
 import os
 from tui import Tui
 
@@ -20,11 +19,10 @@ def stop_xend(tui):
 	need_to_reboot = False
 
 	print >>sys.stderr, "Permanently stopping xend"
-	distro = platform.linux_distribution(full_distribution_name=False)[0].lower()
-	if distro in ["fedora", "redhat", "centos"]:
+	if subprocess.call(["chkconfig", "xend"]) <> 0:
 		if subprocess.call(["chkconfig", "--level", "345", "xend", "off"]) <> 0:
 			print >>sys.stderr, "FAILED: to disable xend"
-	elif distro in ["ubuntu", "debian"]:
+	elif os.path.exists(toolstack.etc_default_xen):
 		r = toolstack.analyse(tui)
 		if r:
 			need_to_reboot = True

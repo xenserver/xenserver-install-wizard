@@ -73,7 +73,7 @@ if __name__ == "__main__":
 		need_to_reboot = True
 		replace.file(r[0], r[1])
 		if os.path.isfile("/etc/default/grub"):
-			subprocess.call(["update-grub"])
+                        grub2.update_grub_config()
 
 	# To run the toolstack we need to reboot with Xen
 	if need_to_reboot:

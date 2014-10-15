@@ -42,7 +42,6 @@ def get_default(lines):
 
 
 def analyse(tui, etc_default_grub = GRUB_CONF, grub_cfg_glob = GRUB_CFG_GLOB):
-
 	f = open(etc_default_grub, "r")
 	lines = f.readlines()
 	f.close()
@@ -80,17 +79,32 @@ def analyse(tui, etc_default_grub = GRUB_CONF, grub_cfg_glob = GRUB_CFG_GLOB):
 		print >>sys.stderr, "WARNING: system is not going to boot xen by default"
 		return
 
-	xen_entry = ""
+	xen_entry = None
+        fallback_entry = None
 	for kernel in kernels:
-		print kernel
-		if kernel.startswith(default_entry) and "xen" in kernel.lower():
+		if "xen" in kernel.lower():
 			if "name" in default_type:
-				xen_entry = kernel
-			if "digit" in default_type:
-				xen_entry = kernels.index(kernel)
-			break
+				fallback_entry = kernel
+			else:
+				fallback_entry = kernels.index(kernel)
 
-	new_lines = []
+                        # Default to the Xen kernel associated with our default_entry
+                        if kernel.startswith(default_entry):
+                                print "Using Xen kernel %s"%kernel
+				xen_entry = fallback_entry
+                                break
+                        else:
+                                print "Fallback kernel %s"%kernel
+                else:
+                        print "Skipping kernel %s"%kernel
+
+        # If none of the Xen kernels start with our current default then fallback
+        # to using the last Xen entry in the list
+        xen_entry = fallback_entry
+
+        if not xen_entry:
+                raise Exception('Cannot find a xen grub config to boot')
+
 	if "saved" in default_type:
 		tmpdir = tempfile.mkdtemp()
 		filename = glob("/boot/grub*/grubenv")[0]
@@ -102,8 +116,11 @@ def analyse(tui, etc_default_grub = GRUB_CONF, grub_cfg_glob = GRUB_CFG_GLOB):
 		new_lines = f.read().split("\n")
 		f.close()
 		shutil.rmtree(tmpdir)
-		
+
+                # Keep default_grub the same
+                return (filename, new_lines)
 	else:
+                new_lines = []
 		for line in lines:
 			tmp = line.strip()
 			if tmp.startswith("GRUB_DEFAULT="):
@@ -113,7 +130,37 @@ def analyse(tui, etc_default_grub = GRUB_CONF, grub_cfg_glob = GRUB_CFG_GLOB):
 			else:
 				new_lines.append(line[0:-1])
 
-	return (etc_default_grub, new_lines)
+                return (etc_default_grub, new_lines)
+
+
+def find_on_path(name):
+        for p in os.getenv('PATH').split(os.pathsep):
+                full_path = os.path.join(p, name)
+                if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                        return full_path
+        return None
+
+
+def update_grub_config():
+        update_grub = find_on_path('update-grub')
+        if update_grub:
+                subprocess.call([update_grub])
+                return
+        # Try and generate manually
+        grub_mkconfig = find_on_path('grub2-mkconfig')
+        if not grub_mkconfig:
+                grub_mkconfig = find_on_path('grub-mkconfig')
+        if not grub_mkconfig:
+                raise Exception("Do not know how to update grub")
+
+        grub_config_file = None
+        for config_file in ['/boot/grub2/grub.cfg', '/boot/grub/grub.cfg']:
+                if os.path.exists(config_file):
+                        grub_config_file = config_file
+        if not grub_config_file:
+                raise Exception("Cannot find grub config file")
+        subprocess.call([grub_mkconfig, "-o", grub_config_file])
+
 
 if __name__ == "__main__":
 	from tui import Tui

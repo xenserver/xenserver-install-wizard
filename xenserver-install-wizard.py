@@ -7,6 +7,7 @@ import os
 from tui import Tui
 
 def reboot():
+	xapi.sync()
 	print >>sys.stderr, "Triggering an immediate reboot"
 	cmd = [ "/sbin/reboot" ]
 	x = subprocess.call(cmd)

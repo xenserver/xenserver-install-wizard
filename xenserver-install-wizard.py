@@ -43,7 +43,7 @@ def reboot_before_continuing(args):
 			# surrounding automation can do more configuration before the reboot
 			print >>sys.stdout, "Please reboot the machine and re-run the wizard."
 			exit(2)
-		if tui.yesno("A reboot is needed before XenServer is fully ready. Would you like to reboot now?", False):
+		if tui.yesno("Please re-run the wizard after the machine is rebooted. Would you like to reboot now?", False):
 			reboot()
 		else:
 			print >>sys.stdout, "Please reboot the machine and re-run the wizard."

@@ -7,6 +7,7 @@ import os
 from tui import Tui
 
 def reboot():
+	xapi.sync()
 	print >>sys.stderr, "Triggering an immediate reboot"
 	cmd = [ "/sbin/reboot" ]
 	x = subprocess.call(cmd)
@@ -19,17 +20,18 @@ def stop_xend(tui):
 	need_to_reboot = False
 
 	print >>sys.stderr, "Permanently stopping xend"
-	if subprocess.call(["chkconfig", "xend"]) <> 0:
-		if subprocess.call(["chkconfig", "--level", "345", "xend", "off"]) <> 0:
-			print >>sys.stderr, "FAILED: to disable xend"
-	elif os.path.exists(toolstack.etc_default_xen):
+	try:
+		if subprocess.call(["chkconfig", "xend"]) <> 0:
+			if subprocess.call(["chkconfig", "--level", "345", "xend", "off"]) <> 0:
+				print >>sys.stderr, "FAILED: to disable xend"
+	except:
+		pass # no chkconfig on Debian/Ubuntu
+	if os.path.exists(toolstack.etc_default_xen):
 		r = toolstack.analyse(tui)
 		if r:
 			need_to_reboot = True
 			for change in r:
 				replace.file(change[0], change[1])
-	else: 
-		print >>sys.stderr, "FAILED: don't know how to disable xend"
 	if subprocess.call(["service", "xend", "stop"]) <> 0:
 		print >>sys.stderr, "FAILED: to stop xend"
 	return need_to_reboot
@@ -42,7 +44,7 @@ def reboot_before_continuing(args):
 			# surrounding automation can do more configuration before the reboot
 			print >>sys.stdout, "Please reboot the machine and re-run the wizard."
 			exit(2)
-		if tui.yesno("A reboot is needed before XenServer is fully ready. Would you like to reboot now?", False):
+		if tui.yesno("Please re-run the wizard after the machine is rebooted. Would you like to reboot now?", False):
 			reboot()
 		else:
 			print >>sys.stdout, "Please reboot the machine and re-run the wizard."

@@ -82,9 +82,12 @@ def start():
 		raise Exception("Could not log in to XAPI")
 
 def sync():
-	x = connect()
-	x.login_with_password("root", "") # let this leak
-	if x.xenapi.pool.sync_database() == "":
-		print >>sys.stderr, "xapi database flushed to disk"
-	else:
-		raise "Failed to flush xapi database to disk"
+	try:
+		x = connect()
+		x.login_with_password("root", "") # let this leak
+		if x.xenapi.pool.sync_database() == "":
+			print >>sys.stderr, "xapi database flushed to disk"
+		else:
+			print >>sys.stderr, "FAILED: to flush xapi database (pool.sync_database)"
+	except:
+		print >>sys.stderr, "WARNING: failed to sync xapi database"

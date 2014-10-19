@@ -33,15 +33,15 @@ def analyse(tui):
 			return
 		path = "/var/lib/xapi/sr-mount/%s" % uuid
 		mkdir(path)
-		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "ffs", "default", False, {})
+		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "file", "default", False, {})
 		x.xenapi.SR.add_to_other_config(sr, "created_by_install_wizard_for_openstack", "")
-		pbd = x.xenapi.PBD.create({ "host": hosts[0], "SR": sr, "device_config": {"path": path}})
+		pbd = x.xenapi.PBD.create({ "host": hosts[0], "SR": sr, "device_config": {"path": path, "location": path}})
 		x.xenapi.PBD.plug(pbd)
 		pool = x.xenapi.pool.get_all()[0]
-		pool_r = x.xenapi.pool.get_record(pool)
-		default_sr = pool_r["default_SR"]
-		x.xenapi.pool.set_default_SR(pool, sr)
-		print >>sys.stderr, "OK: created local ext SR for openstack"
+                x.xenapi.pool.set_default_SR(pool, sr)
+                x.xenapi.pool.set_suspend_image_SR(pool, sr)
+                x.xenapi.pool.set_crash_dump_SR(pool, sr)
+		print >>sys.stderr, "OK: created local file SR for openstack"
 
 	finally:
 		x.logout()

@@ -30,6 +30,7 @@ services = [
         "xenopsd-xc",
 	"xenopsd-xenlight",
 	"ffs",
+	"xapi-storage-script",
 	"squeezed",
 	"xapi",
 ]

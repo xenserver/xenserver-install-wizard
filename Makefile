@@ -15,7 +15,6 @@ install:
 		logging.py \
 		network.py \
 		networkscripts.py \
-		openstack.py \
 		replace.py \
 		storage.py \
 		templates.py \

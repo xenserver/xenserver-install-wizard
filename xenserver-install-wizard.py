@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, subprocess, argparse
-import xapi, replace, grub, grub2, network, iptables, storage, templates, logging, hostname, openstack, toolstack
+import xapi, replace, grub, grub2, network, iptables, storage, templates, logging, hostname, toolstack
 import errata
 import os
 from tui import Tui
@@ -95,7 +95,6 @@ if __name__ == "__main__":
 		replace.file(r[0], r[1])
                 iptables.restart()
 	storage.analyse(tui)
-	openstack.analyse(tui)
 	hostname.analyse(tui)
 	templates.create()
 	errata.analyse()

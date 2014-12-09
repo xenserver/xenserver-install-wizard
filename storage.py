@@ -8,6 +8,14 @@ def mkdir(path):
 	if x <> 0:
 		print >>sys.stderr, "ERROR: failed to mkdir -p %s" % path
 
+def generate_uuid():
+	x = subprocess.Popen(["/usr/bin/uuidgen"], stdout = subprocess.PIPE)
+	y = x.communicate()
+	ret = x.wait ()
+	if ret <> 0:
+		print >>sys.stderr, "ERROR: failed to generate a uuid"
+        return str(y[0].strip())
+
 def list_vgs():
 	x = subprocess.Popen(["/sbin/vgs", "-o", "vg_name", "--noheadings"], stdout = subprocess.PIPE)
         y = x.communicate()
@@ -24,7 +32,7 @@ def list_vgs():
 
 def create_default_sr(tui, x, host):
 	vgs = list_vgs()
-	path = "/usr/share/xapi/images"
+	path = "/var/lib/xapi/sr-mount"
 	choices = []
 	choices.append((path, "Local filesystem",))
 	for vg in vgs:
@@ -34,8 +42,12 @@ def create_default_sr(tui, x, host):
 	if choice == "":
 		return None
 	if choice == path:
+		uuid = generate_uuid()
+		path = "/var/lib/xapi/sr-mount/%s"%uuid
 		mkdir(path)
-		sr = x.xenapi.SR.create(host, { "path": path }, "0", path, "Files stored in %s" % path, "ffs", "default", False)
+		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "file", "default", False, {})
+		pbd = x.xenapi.PBD.create({ "host": host, "SR": sr, "device_config": {"path": path, "location": path}})
+		x.xenapi.PBD.plug(pbd)
 		return sr
 	else:
 		sr = x.xenapi.SR.create(host, { "uri": "vg:///" + choice }, "0", "Local LVM", "LVs stored in %s" % choice, "ezlvm", "default", False)

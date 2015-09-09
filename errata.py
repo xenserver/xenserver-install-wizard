@@ -33,7 +33,7 @@ def xenstored_provided_by_xen():
 def register_services(dry_run):
 	# Work around missing post-run actions in the Debian/Ubuntu
 	# packages. This function is idempotent.
-	for service in [ "message-switch", "forkexecd", "ffs", "xcp-rrdd", "xcp-networkd", "squeezed", "xenopsd-xc", "xenopsd-xenlight", "xapi-storage-script", "xapi" ]:
+	for service in [ "message-switch", "forkexecd", "xcp-rrdd", "xcp-networkd", "squeezed", "xenopsd-xc", "xenopsd-xenlight", "xapi-storage-script", "xapi" ]:
                 if xenstored_provided_by_xen():
                         exec_cmd(['sed', '-i', '-e', 's/xenstored/xen/','/etc/init.d/%s' % service], dry_run)
                 exec_cmd(['update-rc.d', service, 'defaults'], dry_run)

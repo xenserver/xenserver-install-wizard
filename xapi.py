@@ -29,7 +29,6 @@ services = [
 	"xcp-rrdd",
         "xenopsd-xc",
 	"xenopsd-xenlight",
-	"ffs",
 	"xapi-storage-script",
 	"squeezed",
 	"xapi",

@@ -46,7 +46,7 @@ def create_default_sr(tui, x, host):
 		path = "/var/lib/xapi/sr-mount/%s"%uuid
 		mkdir(path)
 		sr = x.xenapi.SR.introduce(uuid, path, "Files stored in %s" % path, "ffs", "default", False, {})
-		pbd = x.xenapi.PBD.create({ "host": host, "SR": sr, "device_config": {"uri": "file:/" + path}})
+		pbd = x.xenapi.PBD.create({ "host": host, "SR": sr, "device_config": {"uri": "file://" + path}})
 		x.xenapi.PBD.plug(pbd)
 		return sr
 	else:
